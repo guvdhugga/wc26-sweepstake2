@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>⚽ World Cup 2026 Sweepstake</title>
+<meta name="description" content="FIFA World Cup 2026 Sweepstake - 24 players, 48 teams">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;WC26 Sweepstake&quot;,&quot;short_name&quot;:&quot;Sweepstake&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0a0f1e&quot;,&quot;theme_color&quot;:&quot;#f59e0b&quot;}">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WC26">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:#0a0f1e;color:#f1f5f9;font-family:'Inter','Segoe UI',sans-serif;min-height:100vh;overscroll-behavior:none}
+  button{font-family:inherit}
+  input{font-family:inherit}
+  input::placeholder{color:#475569}
+  .tab-btn{padding:10px 14px;font-weight:700;font-size:12px;border:none;cursor:pointer;border-radius:10px 10px 0 0;background:transparent;color:#64748b;transition:all 0.2s;white-space:nowrap}
+  .tab-btn.active{background:#111827;color:#f59e0b}
+  .card{background:#111827;border:1px solid #1e2a3a;border-radius:13px;overflow:hidden}
+  .pill{font-size:9px;font-weight:700;background:rgba(245,158,11,0.13);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:1px 4px;white-space:nowrap}
+  .badge{background:#f59e0b;color:#000;border-radius:10px;padding:1px 6px;font-size:11px;font-weight:900;margin-left:5px}
+  .fixture-row{border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:6px;transition:opacity 0.3s}
+  .stat-card{flex:1 1 80px;background:#111827;border:1px solid #1e2a3a;border-radius:12px;padding:14px 16px;text-align:center}
+  .refresh-btn{padding:8px 16px;background:#f59e0b;color:#000;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;transition:opacity 0.2s}
+  .refresh-btn:disabled{background:#1e2a3a;color:#64748b;cursor:not-allowed}
+  .section-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+  ::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const TEAM_FLAGS = {
+  "Austria":"🇦🇹","DR Congo":"🇨🇩","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Cape Verde":"🇨🇻",
+  "Morocco":"🇲🇦","Australia":"🇦🇺","Canada":"🇨🇦","South Korea":"🇰🇷",
+  "France":"🇫🇷","Uzbekistan":"🇺🇿","Colombia":"🇨🇴","New Zealand":"🇳🇿",
+  "Netherlands":"🇳🇱","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Germany":"🇩🇪","Qatar":"🇶🇦",
+  "Argentina":"🇦🇷","Turkiye":"🇹🇷","Spain":"🇪🇸","Tunisia":"🇹🇳",
+  "Portugal":"🇵🇹","Iran":"🇮🇷","United States":"🇺🇸","Cote d'Ivoire":"🇨🇮",
+  "Uruguay":"🇺🇾","Haiti":"🇭🇹","Mexico":"🇲🇽","Ghana":"🇬🇭",
+  "Belgium":"🇧🇪","Algeria":"🇩🇿","Croatia":"🇭🇷","Iraq":"🇮🇶",
+  "Switzerland":"🇨🇭","Panama":"🇵🇦","Ecuador":"🇪🇨","Jordan":"🇯🇴",
+  "Sweden":"🇸🇪","Saudi Arabia":"🇸🇦","Norway":"🇳🇴","Japan":"🇯🇵",
+  "Egypt":"🇪🇬","Czechia":"🇨🇿","Paraguay":"🇵🇾","Senegal":"🇸🇳",
+  "Brazil":"🇧🇷","Curacao":"🇨🇼","South Africa":"🇿🇦","Bosnia & Herzegovina":"🇧🇦"
+};
+const FLAG = t => TEAM_FLAGS[t] || "🏳";
+
+const TIER = {
+  "France":1,"England":1,"Spain":1,"Brazil":1,"Argentina":1,
+  "Germany":2,"Portugal":2,"Netherlands":2,"Colombia":2,
+  "Morocco":3,"United States":3,"Uruguay":3,"Belgium":3,"Mexico":3,
+  "Japan":3,"Croatia":3,"South Korea":3
+};
+
+const DRAW = [
+  {name:"Jat",teams:["Austria","DR Congo"]},
+  {name:"Hape",teams:["England","Cape Verde"]},
+  {name:"Rihaana",teams:["Morocco","Australia"]},
+  {name:"Riyaan",teams:["Canada","South Korea"]},
+  {name:"Tony P",teams:["France","Uzbekistan"]},
+  {name:"Jas",teams:["Colombia","New Zealand"]},
+  {name:"Minde",teams:["Netherlands","Scotland"]},
+  {name:"Amaaliya",teams:["Germany","Qatar"]},
+  {name:"Sukhi S",teams:["Argentina","Turkiye"]},
+  {name:"Amer",teams:["Spain","Tunisia"]},
+  {name:"Kareena",teams:["Portugal","Iran"]},
+  {name:"Ranjali",teams:["United States","Cote d'Ivoire"]},
+  {name:"Tarlok",teams:["Uruguay","Haiti"]},
+  {name:"Kulwinder",teams:["Mexico","Ghana"]},
+  {name:"Tony B",teams:["Belgium","Algeria"]},
+  {name:"Ginde",teams:["Croatia","Iraq"]},
+  {name:"Alisha",teams:["Switzerland","Panama"]},
+  {name:"Rea",teams:["Ecuador","Jordan"]},
+  {name:"Gurmail",teams:["Sweden","Saudi Arabia"]},
+  {name:"Parmjit",teams:["Norway","Japan"]},
+  {name:"Gind",teams:["Egypt","Czechia"]},
+  {name:"Sukhi D",teams:["Paraguay","Senegal"]},
+  {name:"Zora",teams:["Brazil","Curacao"]},
+  {name:"Amaya",teams:["South Africa","Bosnia & Herzegovina"]}
+];
+
+const PRIZES = [
+  {id:"winner",emoji:"🏆",title:"Tournament Winner",desc:"Your team lifts the trophy on July 19",colour:"#f59e0b"},
+  {id:"runner",emoji:"🥈",title:"Tournament Runner-Up",desc:"Your team reaches the final",colour:"#94a3b8"},
+  {id:"last",emoji:"🪣",title:"Last in Group Stage",desc:"Your team finishes bottom of their group",colour:"#ef4444"},
+  {id:"redcard",emoji:"🟥",title:"Quickest Red Card",desc:"Your team gets the earliest red card",colour:"#dc2626"},
+  {id:"goal",emoji:"⚡",title:"Quickest Goal",desc:"Your team scores the fastest goal",colour:"#10b981"},
+  {id:"owngoal",emoji:"🤦",title:"Quickest Own Goal",desc:"Your team scores the fastest own goal",colour:"#8b5cf6"}
+];
+
+let RESULTS = [
+  {home:"Mexico",away:"South Africa",hs:2,as:0,date:"Jun 11"},
+  {home:"Canada",away:"Bosnia & Herzegovina",hs:2,as:1,date:"Jun 12"},
+  {home:"South Korea",away:"Czechia",hs:2,as:1,date:"Jun 12"},
+  {home:"United States",away:"Paraguay",hs:4,as:1,date:"Jun 12"},
+  {home:"Morocco",away:"Scotland",hs:1,as:0,date:"Jun 13"},
+  {home:"Brazil",away:"Haiti",hs:1,as:1,date:"Jun 13"},
+  {home:"Qatar",away:"Switzerland",hs:1,as:1,date:"Jun 13"},
+  {home:"Australia",away:"Turkiye",hs:2,as:1,date:"Jun 13"},
+  {home:"Germany",away:"Curacao",hs:7,as:1,date:"Jun 15"},
+  {home:"Netherlands",away:"Japan",hs:2,as:2,date:"Jun 15"},
+  {home:"Cote d'Ivoire",away:"Ecuador",hs:1,as:0,date:"Jun 15"},
+  {home:"Sweden",away:"Tunisia",hs:5,as:1,date:"Jun 15"},
+  {home:"Spain",away:"Cape Verde",hs:0,as:0,date:"Jun 15"},
+  {home:"Belgium",away:"Egypt",hs:1,as:1,date:"Jun 15"}
+];
+
+const ALL_FIXTURES = [
+  {date:"Jun 11",matches:[{home:"Mexico",away:"South Africa",time:"8pm BST"}]},
+  {date:"Jun 12",matches:[{home:"Canada",away:"Bosnia & Herzegovina",time:"5pm BST"},{home:"South Korea",away:"Czechia",time:"8pm BST"},{home:"United States",away:"Paraguay",time:"2am BST"}]},
+  {date:"Jun 13",matches:[{home:"Morocco",away:"Scotland",time:"5pm BST"},{home:"Brazil",away:"Haiti",time:"8pm BST"},{home:"Qatar",away:"Switzerland",time:"11pm BST"},{home:"Australia",away:"Turkiye",time:"2am BST"}]},
+  {date:"Jun 15",matches:[{home:"Cote d'Ivoire",away:"Ecuador",time:"5pm BST"},{home:"Germany",away:"Curacao",time:"8pm BST"},{home:"Netherlands",away:"Japan",time:"11pm BST"},{home:"Spain",away:"Cape Verde",time:"5pm BST"},{home:"Belgium",away:"Egypt",time:"8pm BST"},{home:"Saudi Arabia",away:"Uruguay",time:"11pm BST"},{home:"Sweden",away:"Tunisia",time:"2am BST"},{home:"Iran",away:"New Zealand",time:"2am BST"}]},
+  {date:"Jun 16",matches:[{home:"France",away:"Senegal",time:"8pm BST"},{home:"Iraq",away:"Norway",time:"11pm BST"},{home:"Argentina",away:"Algeria",time:"2am BST"},{home:"Austria",away:"Jordan",time:"5am BST"}]},
+  {date:"Jun 17",matches:[{home:"Portugal",away:"DR Congo",time:"6pm BST"},{home:"England",away:"Croatia",time:"9pm BST"},{home:"Ghana",away:"Panama",time:"12am BST"},{home:"Uzbekistan",away:"Colombia",time:"3am BST"}]},
+  {date:"Jun 18",matches:[{home:"Czechia",away:"South Africa",time:"5pm BST"},{home:"Switzerland",away:"Bosnia & Herzegovina",time:"8pm BST"},{home:"Canada",away:"Qatar",time:"11pm BST"},{home:"Mexico",away:"South Korea",time:"2am BST"}]},
+  {date:"Jun 19",matches:[{home:"United States",away:"Australia",time:"8pm BST"},{home:"Scotland",away:"Morocco",time:"11pm BST"},{home:"Brazil",away:"Haiti",time:"2am BST"},{home:"Turkiye",away:"Paraguay",time:"5am BST"}]},
+  {date:"Jun 20",matches:[{home:"Netherlands",away:"Sweden",time:"6pm BST"},{home:"Germany",away:"Cote d'Ivoire",time:"9pm BST"},{home:"Ecuador",away:"Curacao",time:"12am BST"},{home:"Tunisia",away:"Japan",time:"3am BST"}]},
+  {date:"Jun 21",matches:[{home:"Spain",away:"Saudi Arabia",time:"5pm BST"},{home:"Belgium",away:"Iran",time:"8pm BST"},{home:"Uruguay",away:"Cape Verde",time:"11pm BST"},{home:"New Zealand",away:"Egypt",time:"2am BST"}]},
+  {date:"Jun 22",matches:[{home:"Argentina",away:"Austria",time:"6pm BST"},{home:"France",away:"Iraq",time:"10pm BST"},{home:"Norway",away:"Senegal",time:"1am BST"},{home:"Jordan",away:"Algeria",time:"4am BST"}]},
+  {date:"Jun 23",matches:[{home:"Portugal",away:"Uzbekistan",time:"6pm BST"},{home:"England",away:"Ghana",time:"9pm BST"},{home:"Panama",away:"Croatia",time:"12am BST"},{home:"Colombia",away:"DR Congo",time:"3am BST"}]},
+  {date:"Jun 24",matches:[{home:"Switzerland",away:"Canada",time:"8pm BST"},{home:"Bosnia & Herzegovina",away:"Qatar",time:"8pm BST"},{home:"Morocco",away:"Haiti",time:"11pm BST"},{home:"Scotland",away:"Brazil",time:"11pm BST"},{home:"South Africa",away:"South Korea",time:"2am BST"},{home:"Czechia",away:"Mexico",time:"2am BST"}]},
+  {date:"Jun 25",matches:[{home:"Germany",away:"Ecuador",time:"9pm BST"},{home:"Cote d'Ivoire",away:"Curacao",time:"9pm BST"},{home:"Japan",away:"Sweden",time:"12am BST"},{home:"Tunisia",away:"Netherlands",time:"12am BST"},{home:"United States",away:"Turkiye",time:"3am BST"},{home:"Australia",away:"Paraguay",time:"3am BST"}]},
+  {date:"Jun 26",matches:[{home:"Norway",away:"France",time:"8pm BST"},{home:"Senegal",away:"Iraq",time:"8pm BST"},{home:"Cape Verde",away:"Saudi Arabia",time:"1am BST"},{home:"Uruguay",away:"Spain",time:"1am BST"},{home:"Egypt",away:"Iran",time:"4am BST"},{home:"New Zealand",away:"Belgium",time:"4am BST"}]},
+  {date:"Jun 27",matches:[{home:"Panama",away:"England",time:"10pm BST"},{home:"Croatia",away:"Ghana",time:"10pm BST"},{home:"Colombia",away:"Portugal",time:"12:30am BST"},{home:"DR Congo",away:"Uzbekistan",time:"12:30am BST"},{home:"Algeria",away:"Austria",time:"3am BST"},{home:"Jordan",away:"Argentina",time:"3am BST"}]}
+];
+
+// State
+let state = {
+  tab: "draw",
+  revealed: new Set(DRAW.map(d => d.name)),
+  search: "",
+  prizeWinners: {
+    goal: {team:"Germany",player:"Amaaliya"},
+    owngoal: {team:"Paraguay",player:"Sukhi D"},
+    redcard: {team:"South Africa",player:"Amaya"}
+  },
+  editingPrize: null,
+  teamInput: "",
+  suggestions: [],
+  refreshing: false,
+  lastUpdated: null,
+  refreshError: null
+};
+
+const teamToPlayer = Object.fromEntries(DRAW.flatMap(d => d.teams.map(t => [t, d.name])));
+
+function getResultMap() {
+  return Object.fromEntries(RESULTS.map(r => [r.home+"|"+r.away, r]));
+}
+
+function setState(updates) {
+  Object.assign(state, updates);
+  render();
+}
+
+function findWinner(team) {
+  if (!team) return null;
+  return DRAW.find(d => d.teams.some(t => t.toLowerCase() === team.toLowerCase()));
+}
+
+async function refreshResults() {
+  setState({refreshing:true, refreshError:null});
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:3000,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:"Search for all FIFA World Cup 2026 match results so far. Return ONLY a JSON array, no markdown, no explanation: [{\"home\":\"TeamName\",\"away\":\"TeamName\",\"hs\":0,\"as\":0,\"date\":\"Jun 11\"}]. Use these exact team names: Mexico, South Africa, Canada, Bosnia & Herzegovina, South Korea, Czechia, United States, Paraguay, Morocco, Scotland, Brazil, Haiti, Qatar, Switzerland, Australia, Turkiye, Germany, Curacao, Netherlands, Japan, Cote d'Ivoire, Ecuador, Sweden, Tunisia, Spain, Cape Verde, Belgium, Egypt, Saudi Arabia, Uruguay, Iran, New Zealand, France, Senegal, Iraq, Norway, Argentina, Algeria, Austria, Jordan, Portugal, DR Congo, England, Croatia, Ghana, Panama, Uzbekistan, Colombia. Only include finished matches."}]
+      })
+    });
+    const ai = await res.json();
+    const text = (ai.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+    const m = text.match(/\[[\s\S]*\]/);
+    if (!m) throw new Error("Parse error");
+    const parsed = JSON.parse(m[0]);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      RESULTS = parsed;
+      setState({refreshing:false, lastUpdated:new Date(), refreshError:null});
+    } else throw new Error("No data");
+  } catch(e) {
+    setState({refreshing:false, refreshError:"Could not fetch results. Try again."});
+  }
+}
+
+// Schedule auto-refresh at 5am BST (4am UTC) daily
+function scheduleAutoRefresh() {
+  const now = new Date();
+  const next = new Date();
+  next.setUTCHours(4,0,0,0);
+  if (next <= now) next.setUTCDate(next.getUTCDate()+1);
+  setTimeout(() => {
+    refreshResults();
+    setInterval(refreshResults, 24*60*60*1000);
+  }, next - now);
+}
+scheduleAutoRefresh();
+
+// ── RENDER ──────────────────────────────────────────────────────
+function render() {
+  const resultMap = getResultMap();
+  const totalGoals = RESULTS.reduce((s,r)=>s+r.hs+r.as,0);
+  const teamGoals = {};
+  RESULTS.forEach(r => {
+    teamGoals[r.home]=(teamGoals[r.home]||0)+r.hs;
+    teamGoals[r.away]=(teamGoals[r.away]||0)+r.as;
+  });
+  const topScorers = Object.entries(teamGoals).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const byDate = RESULTS.reduce((acc,r)=>{ (acc[r.date]=acc[r.date]||[]).push(r); return acc; },{});
+  const filtered = state.search.trim()
+    ? DRAW.filter(d=>d.name.toLowerCase().includes(state.search.toLowerCase())||d.teams.some(t=>t.toLowerCase().includes(state.search.toLowerCase())))
+    : DRAW;
+  const totalPrizes = Object.keys(state.prizeWinners).length;
+
+  document.getElementById("app").innerHTML = `
+  <div style="min-height:100vh;background:#0a0f1e;color:#f1f5f9;font-family:'Inter','Segoe UI',sans-serif;padding-bottom:40px">
+
+    <!-- HEADER -->
+    <div style="background:linear-gradient(135deg,#0a0f1e 0%,#1a2744 100%);border-bottom:2px solid #f59e0b;padding:20px 16px 0">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:10px;letter-spacing:4px;color:#f59e0b;text-transform:uppercase;margin-bottom:5px;font-weight:700">FIFA World Cup 2026</div>
+        <h1 style="font-size:clamp(22px,6vw,34px);font-weight:900;letter-spacing:-1px;color:#fff;margin:0">⚽ Sweepstake</h1>
+        <p style="margin:5px 0 0;color:#64748b;font-size:12px">24 players · 48 teams · Jun 11 – Jul 19</p>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;flex-wrap:wrap">
+        ${[["draw","🎲 Draw"],["prizes","🏅 Prizes"],["goals","⚽ Goals"],["fixtures","📅 Fixtures"]].map(([id,label])=>`
+          <button class="tab-btn ${state.tab===id?'active':''}" onclick="setState({tab:'${id}'})">
+            ${label}${id==="prizes"&&totalPrizes>0?'<span class="badge">'+totalPrizes+'</span>':''}
+          </button>
+        `).join("")}
+      </div>
+    </div>
+
+    <div style="max-width:740px;margin:0 auto;padding:18px 14px">
+
+    ${state.tab === "draw" ? `
+      <!-- DRAW TAB -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button onclick="revealNext()" ${state.revealed.size===DRAW.length?'disabled':''} style="padding:10px 14px;font-weight:700;font-size:13px;background:${state.revealed.size<DRAW.length?'#10b981':'#1e2a3a'};color:${state.revealed.size<DRAW.length?'#fff':'#64748b'};border:none;border-radius:9px;cursor:${state.revealed.size<DRAW.length?'pointer':'not-allowed'};flex:1 1 100px">
+          ${state.revealed.size===0?"🎬 Start":state.revealed.size===DRAW.length?"Done":"▶ Next ("+(DRAW.length-state.revealed.size)+" left)"}
+        </button>
+        <button onclick="setState({revealed:new Set(DRAW.map(d=>d.name))})" style="padding:10px 12px;font-weight:700;font-size:13px;background:#1e2a3a;color:#f1f5f9;border:1px solid #1e2a3a;border-radius:9px;cursor:pointer">Show All</button>
+        <button onclick="setState({revealed:new Set()})" style="padding:10px 12px;font-weight:700;font-size:13px;background:#1e2a3a;color:#64748b;border:1px solid #1e2a3a;border-radius:9px;cursor:pointer">🔒 Hide</button>
+        <input value="${state.search}" oninput="setState({search:this.value})" placeholder="Search..." style="flex:1 1 120px;padding:10px 12px;background:#1e2a3a;border:1px solid #1e2a3a;border-radius:9px;color:#f1f5f9;font-size:13px;outline:none">
+      </div>
+      <div style="height:3px;background:#1e2a3a;border-radius:3px;margin-bottom:16px;overflow:hidden">
+        <div style="height:100%;width:${(state.revealed.size/DRAW.length*100)}%;background:linear-gradient(90deg,#f59e0b,#10b981);transition:width 0.4s;border-radius:3px"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${filtered.map((entry,i) => {
+          const isRevealed = state.revealed.has(entry.name);
+          const myPrizes = PRIZES.filter(p=>state.prizeWinners[p.id]&&state.prizeWinners[p.id].player===entry.name);
+          return `
+          <div class="card" onclick="${!isRevealed?'revealPlayer(\''+entry.name+'\')':''}" style="border-color:${isRevealed?'rgba(245,158,11,0.33)':'#1e2a3a'};cursor:${isRevealed?'default':'pointer'}">
+            <div style="padding:12px 15px;display:flex;align-items:center;justify-content:space-between;background:${isRevealed?'linear-gradient(90deg,#150f00,#111827)':'#111827'}">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;background:${isRevealed?'#f59e0b':'#1e2a3a'};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:${isRevealed?'#000':'#64748b'}">
+                  ${isRevealed?entry.name[0].toUpperCase():i+1}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:15px">${entry.name}</div>
+                  ${myPrizes.length>0?'<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">'+myPrizes.map(p=>'<span style="font-size:10px;background:'+p.colour+'22;color:'+p.colour+';border:1px solid '+p.colour+'55;border-radius:6px;padding:1px 6px;font-weight:700">'+p.emoji+' '+p.title+'</span>').join("")+'</div>':""}
+                </div>
+              </div>
+              ${!isRevealed?'<span style="font-size:11px;color:#64748b">Tap to reveal</span>':''}
+            </div>
+            ${isRevealed?`
+            <div style="padding:10px 15px 13px;display:flex;flex-wrap:wrap;gap:8px">
+              ${entry.teams.map(team=>{
+                const tier=TIER[team];
+                const tc=tier===1?"#f59e0b":tier===2?"#60a5fa":null;
+                const tl=tier===1?"⭐ Fav":tier===2?"Strong":null;
+                const isPrize=Object.values(state.prizeWinners).some(pw=>pw.team===team);
+                return `<div style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:#1e2a3a;border-radius:9px;font-size:13px;border:1px solid ${isPrize?"#f59e0b":tc||"#1e2a3a"}">
+                  <span style="font-size:18px">${FLAG(team)}</span>
+                  <div>
+                    <div style="font-weight:600">${team}</div>
+                    ${tl?'<div style="font-size:10px;color:'+tc+';font-weight:700;margin-top:1px">'+tl+'</div>':""}
+                  </div>
+                </div>`;
+              }).join("")}
+            </div>`:`
+            <div style="padding:10px 15px 12px;display:flex;gap:7px">
+              ${entry.teams.map(()=>'<div style="width:70px;height:38px;background:#1e2a3a;border-radius:9px"></div>').join("")}
+            </div>`}
+          </div>`;
+        }).join("")}
+      </div>
+    ` : state.tab === "prizes" ? `
+      <!-- PRIZES TAB -->
+      <p style="color:#64748b;font-size:13px;margin:0 0 16px">Enter the winning team for each category to reveal who collects the prize!</p>
+      <div style="display:flex;flex-direction:column;gap:13px">
+        ${PRIZES.map(prize=>{
+          const pw=state.prizeWinners[prize.id];
+          const isEditing=state.editingPrize===prize.id;
+          return `<div class="card" style="border-color:${pw?prize.colour+'77':'#1e2a3a'}">
+            <div style="padding:15px 17px;display:flex;align-items:center;gap:13px;background:${pw?'linear-gradient(90deg,'+prize.colour+'18,#111827)':'#111827'}">
+              <div style="font-size:28px;flex-shrink:0">${prize.emoji}</div>
+              <div style="flex:1">
+                <div style="font-weight:800;font-size:14px;color:${pw?prize.colour:'#f1f5f9'}">${prize.title}</div>
+                <div style="font-size:11px;color:#64748b;margin-top:2px">${prize.desc}</div>
+              </div>
+              ${!pw&&!isEditing?`<button onclick="setState({editingPrize:'${prize.id}',teamInput:'',suggestions:[]})" style="padding:7px 13px;background:${prize.colour};color:#000;border:none;border-radius:7px;font-weight:700;font-size:11px;cursor:pointer;flex-shrink:0">Set</button>`:""}
+              ${pw?`<button onclick="clearPrize('${prize.id}')" style="padding:5px 9px;background:transparent;color:#64748b;border:1px solid #1e2a3a;border-radius:7px;font-size:11px;cursor:pointer;flex-shrink:0">Edit</button>`:""}
+            </div>
+            ${pw?`<div style="padding:13px 17px;display:flex;align-items:center;gap:13px;border-top:1px solid #1e2a3a">
+              <div style="font-size:26px">${FLAG(pw.team)}</div>
+              <div><div style="font-size:11px;color:#64748b;margin-bottom:2px">Team</div><div style="font-weight:700;font-size:15px">${pw.team}</div></div>
+              <div style="margin-left:16px"><div style="font-size:11px;color:#64748b;margin-bottom:2px">Winner 🎉</div><div style="font-weight:800;font-size:17px;color:${prize.colour}">${pw.player}</div></div>
+            </div>`:""}
+            ${isEditing?`<div style="padding:13px 17px;border-top:1px solid #1e2a3a">
+              <div style="font-size:12px;color:#64748b;margin-bottom:7px">Which team?</div>
+              <div style="position:relative">
+                <input id="team-input" value="${state.teamInput}" oninput="handleTeamInput(this.value)" placeholder="Type team name..." style="width:100%;padding:10px 13px;background:#1e2a3a;border:1px solid #1e2a3a;border-radius:8px;color:#f1f5f9;font-size:14px;outline:none">
+                ${state.suggestions.length>0?`<div style="position:absolute;top:100%;left:0;right:0;background:#1a2235;border:1px solid #1e2a3a;border-radius:8px;z-index:10;overflow:hidden;margin-top:3px">
+                  ${state.suggestions.map(s=>`<div onclick="selectSuggestion('${s}')" style="padding:9px 13px;cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px" onmouseover="this.style.background='#1e2a3a'" onmouseout="this.style.background=''">${FLAG(s)} ${s}</div>`).join("")}
+                </div>`:""}
+              </div>
+              <div style="display:flex;gap:8px;margin-top:9px">
+                <button onclick="confirmPrize('${prize.id}')" ${!findWinner(state.teamInput)?'disabled':''} style="flex:1;padding:10px;font-weight:700;font-size:13px;background:${findWinner(state.teamInput)?prize.colour:'#1e2a3a'};color:${findWinner(state.teamInput)?'#000':'#64748b'};border:none;border-radius:7px;cursor:${findWinner(state.teamInput)?'pointer':'not-allowed'}">Confirm</button>
+                <button onclick="setState({editingPrize:null,teamInput:'',suggestions:[]})" style="padding:10px 14px;font-weight:700;font-size:13px;background:#1e2a3a;color:#64748b;border:1px solid #1e2a3a;border-radius:7px;cursor:pointer">Cancel</button>
+              </div>
+            </div>`:""}
+          </div>`;
+        }).join("")}
+      </div>
+      ${totalPrizes===PRIZES.length?`<div style="margin-top:26px;padding:18px;background:linear-gradient(135deg,#1a1200,#111827);border:2px solid #f59e0b;border-radius:13px;text-align:center">
+        <div style="font-size:30px;margin-bottom:7px">🏆</div>
+        <div style="font-weight:900;font-size:17px;color:#f59e0b">All prizes awarded!</div>
+        <div style="color:#64748b;font-size:12px;margin-top:5px">Congratulations to all winners! 🎉</div>
+      </div>`:""}
+    ` : state.tab === "goals" ? `
+      <!-- GOALS TAB -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:12px;color:#64748b">${state.lastUpdated?"Updated "+state.lastUpdated.toLocaleTimeString():RESULTS.length+" matches"} · Auto-refreshes 5am BST</div>
+        <button class="refresh-btn" onclick="refreshResults()" ${state.refreshing?"disabled":""}>${state.refreshing?"Updating...":"🔄 Refresh"}</button>
+      </div>
+      ${state.refreshError?`<div style="background:#1e0a0a;border:1px solid #ef4444;border-radius:8px;padding:9px 13px;color:#ef4444;font-size:12px;margin-bottom:13px">${state.refreshError}</div>`:""}
+      <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap">
+        ${[{label:"Total Goals",value:totalGoals,emoji:"⚽"},{label:"Played",value:RESULTS.length,emoji:"🏟"},{label:"Per Game",value:(totalGoals/RESULTS.length).toFixed(1),emoji:"📊"}].map(s=>`
+        <div class="stat-card">
+          <div style="font-size:20px">${s.emoji}</div>
+          <div style="font-size:26px;font-weight:900;color:#f59e0b;line-height:1.1">${s.value}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:3px">${s.label}</div>
+        </div>`).join("")}
+      </div>
+      <div class="card" style="padding:13px 15px;margin-bottom:18px">
+        <div class="section-label">Top Scoring Teams</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${topScorers.map(([team,goals],i)=>`
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="font-size:11px;color:#64748b;width:14px;text-align:right">${i+1}</span>
+            <span style="font-size:17px">${FLAG(team)}</span>
+            <span style="flex:1;font-size:13px;font-weight:500">${team}</span>
+            <div style="display:flex;gap:2px">${Array.from({length:Math.min(goals,10)}).map(()=>'<span style="font-size:10px">⚽</span>').join("")}</div>
+            <span style="font-size:14px;font-weight:800;color:#f59e0b;min-width:18px;text-align:right">${goals}</span>
+          </div>`).join("")}
+        </div>
+      </div>
+      ${Object.entries(byDate).map(([date,matches])=>`
+      <div style="margin-bottom:14px">
+        <div class="section-label">${date}</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          ${matches.map(m=>`
+          <div class="card" style="padding:10px 13px;display:flex;align-items:center;gap:7px">
+            <div style="display:flex;align-items:center;gap:5px;flex:1;justify-content:flex-end">
+              <span style="font-size:13px;font-weight:600">${m.home}</span>
+              <span style="font-size:17px">${FLAG(m.home)}</span>
+            </div>
+            <div style="text-align:center;min-width:50px">
+              <div style="font-weight:900;font-size:17px;color:#f59e0b">${m.hs}-${m.as}</div>
+              <div style="font-size:10px;color:#64748b">${m.hs+m.as} goals</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;flex:1">
+              <span style="font-size:17px">${FLAG(m.away)}</span>
+              <span style="font-size:13px;font-weight:600">${m.away}</span>
+            </div>
+          </div>`).join("")}
+        </div>
+      </div>`).join("")}
+    ` : `
+      <!-- FIXTURES TAB -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <p style="color:#64748b;font-size:11px;margin:0">🟡 = sweepstake team · ✅ = played · BST</p>
+        <button class="refresh-btn" onclick="refreshResults()" ${state.refreshing?"disabled":""}>${state.refreshing?"Updating...":"🔄 Refresh"}</button>
+      </div>
+      ${state.refreshError?`<div style="background:#1e0a0a;border:1px solid #ef4444;border-radius:8px;padding:9px 13px;color:#ef4444;font-size:12px;margin-bottom:12px">${state.refreshError}</div>`:""}
+      ${ALL_FIXTURES.map(({date,matches})=>`
+      <div style="margin-bottom:16px">
+        <div class="section-label">${date}</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          ${matches.map(m=>{
+            const hp=teamToPlayer[m.home], ap=teamToPlayer[m.away];
+            const highlight=hp||ap;
+            const result=resultMap[m.home+"|"+m.away];
+            return `<div class="fixture-row" style="background:${highlight?'linear-gradient(90deg,#150f00,#111827)':'#111827'};border:1px solid ${highlight?'rgba(245,158,11,0.4)':'#1e2a3a'};opacity:${result?0.75:1}">
+              <div style="flex:1;display:flex;align-items:center;gap:5px;justify-content:flex-end;flex-wrap:wrap">
+                ${hp?'<span class="pill">'+hp+'</span>':""}
+                <span style="font-size:12px;font-weight:${hp?700:400};color:${hp?'#f59e0b':'#f1f5f9'}">${m.home}</span>
+                <span style="font-size:16px">${FLAG(m.home)}</span>
+              </div>
+              <div style="min-width:60px;text-align:center">
+                ${result?`<div style="font-weight:900;font-size:15px;color:#f59e0b">${result.hs}-${result.as}</div><div style="font-size:9px;color:#10b981;font-weight:700">✅ FT</div>`
+                :`<div style="font-weight:700;font-size:10px;color:#64748b">vs</div><div style="font-size:9px;color:#64748b">${m.time}</div>`}
+              </div>
+              <div style="flex:1;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+                <span style="font-size:16px">${FLAG(m.away)}</span>
+                <span style="font-size:12px;font-weight:${ap?700:400};color:${ap?'#f59e0b':'#f1f5f9'}">${m.away}</span>
+                ${ap?'<span class="pill">'+ap+'</span>':""}
+              </div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>`).join("")}
+    `}
+
+    </div>
+  </div>`;
+
+  // Re-focus search input if searching
+  if (state.tab==="draw" && state.search) {
+    const inp = document.querySelector('input[placeholder="Search..."]');
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length,inp.value.length); }
+  }
+  if (state.editingPrize) {
+    const inp = document.getElementById("team-input");
+    if (inp) inp.focus();
+  }
+}
+
+function revealNext() {
+  const next = DRAW.find(d => !state.revealed.has(d.name));
+  if (next) { state.revealed.add(next.name); setState({}); }
+}
+function revealPlayer(name) {
+  state.revealed.add(name); setState({});
+}
+function clearPrize(id) {
+  const pw = {...state.prizeWinners};
+  delete pw[id];
+  setState({prizeWinners:pw});
+}
+function handleTeamInput(val) {
+  const all = [...new Set(DRAW.flatMap(d=>d.teams))];
+  const sugg = val.length>=2 ? all.filter(t=>t.toLowerCase().includes(val.toLowerCase())).slice(0,6) : [];
+  setState({teamInput:val, suggestions:sugg});
+}
+function selectSuggestion(s) {
+  setState({teamInput:s, suggestions:[]});
+}
+function confirmPrize(prizeId) {
+  const winner = findWinner(state.teamInput);
+  if (!winner) return;
+  const pw = {...state.prizeWinners, [prizeId]:{team:state.teamInput, player:winner.name}};
+  setState({prizeWinners:pw, editingPrize:null, teamInput:"", suggestions:[]});
+}
+
+render();
+</script>
+</body>
+</html>
